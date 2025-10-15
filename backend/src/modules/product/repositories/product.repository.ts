@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Product } from '../entities/product.entity';
-import { FindManyOptions, Like, Repository } from 'typeorm';
 import { QueryOptions } from 'src/common/interface/query-options.interface';
+import { FindManyOptions, Like, Repository } from 'typeorm';
 import { ProductCreateInput } from '../dto/product-create.dto';
 import { ProductUpdateInput } from '../dto/product-update.dto';
+import { Product } from '../entities/product.entity';
 
 @Injectable()
 export class ProductRepository {

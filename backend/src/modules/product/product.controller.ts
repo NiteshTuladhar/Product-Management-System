@@ -1,23 +1,20 @@
 import {
+  Body,
   Controller,
   DefaultValuePipe,
-  Get,
-  ParseIntPipe,
-  Query,
-  Param,
-  Body,
-  Post,
-  Put,
   Delete,
+  Get,
+  Param,
+  ParseIntPipe,
   ParseUUIDPipe,
-  HttpCode,
-  HttpStatus,
   Patch,
+  Post,
+  Query
 } from '@nestjs/common';
-import { ProductService } from './product.service';
-import { Product } from './entities/product.entity';
 import { ProductCreateInput } from './dto/product-create.dto';
 import { ProductUpdateInput } from './dto/product-update.dto';
+import { Product } from './entities/product.entity';
+import { ProductService } from './product.service';
 
 @Controller('products')
 export class ProductController {
@@ -41,7 +38,7 @@ export class ProductController {
   }
 
   @Get(':id')
-  async getProductDetails(@Param() id: string): Promise<Product> {
+  async getProductDetails(@Param('id') id: string): Promise<Product> {
     return this.productService.getProductById(id);
   }
 
@@ -51,6 +48,7 @@ export class ProductController {
   ): Promise<Product> {
     return this.productService.createProduct(createProductDto);
   }
+
   @Patch(':id')
   async updateProduct(
     @Param('id', ParseUUIDPipe) id: string,
@@ -60,7 +58,6 @@ export class ProductController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteProduct(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<{ message: string }> {

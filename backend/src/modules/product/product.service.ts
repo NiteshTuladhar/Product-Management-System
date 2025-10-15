@@ -3,11 +3,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ProductRepository } from './repositories/product.repository';
 import { QueryOptions } from 'src/common/interface/query-options.interface';
-import { Product } from './entities/product.entity';
 import { ProductCreateInput } from './dto/product-create.dto';
 import { ProductUpdateInput } from './dto/product-update.dto';
+import { Product } from './entities/product.entity';
+import { ProductRepository } from './repositories/product.repository';
 
 @Injectable()
 export class ProductService {
