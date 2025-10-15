@@ -5,7 +5,7 @@ import {
   IsPositive,
   IsString,
   Length,
-  Min
+  Min,
 } from 'class-validator';
 
 export class ProductUpdateInput {
@@ -19,14 +19,14 @@ export class ProductUpdateInput {
   description?: string;
 
   @IsNumber({ maxDecimalPlaces: 2 })
-  @IsPositive({message: 'Price must be positive'})
+  @IsPositive({ message: 'Price must be positive' })
   @Min(0, { message: 'Price must be non-negative' })
   @Type(() => Number)
   price?: number;
 
   @IsOptional()
   @IsString()
-  @Length(1, 100)
+  @Length(0, 100)
   category?: string;
 
   @IsOptional()

@@ -3,8 +3,8 @@ import {
   Product,
   QueryOptionsParams,
   ProductListResponse,
-  CreateProductData,
-  UpdateProductData,
+  CreateProductFormData,
+  UpdateProductFormData,
 } from "@/types/products";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -26,21 +26,31 @@ class ProductService {
     return response.data;
   }
 
-  async getProduct(id: string): Promise<Product> {
-    const response = await api.get<Product>(`/products/${id}`);
+  async getProduct(id: string): Promise<{ data: Product; success: boolean }> {
+    const response = await api.get<{ data: Product; success: boolean }>(
+      `/products/${id}`
+    );
     return response.data;
   }
 
-  async createProduct(productData: CreateProductData): Promise<Product> {
-    const response = await api.post<Product>("/products", productData);
+  async createProduct(
+    productData: CreateProductFormData
+  ): Promise<{ data: Product; success: boolean }> {
+    const response = await api.post<{ data: Product; success: boolean }>(
+      "products/",
+      productData
+    );
     return response.data;
   }
 
   async updateProduct(
     id: string,
-    productData: UpdateProductData
-  ): Promise<Product> {
-    const response = await api.put<Product>(`/products/${id}`, productData);
+    productData: UpdateProductFormData
+  ): Promise<{ data: Product; success: boolean }> {
+    const response = await api.patch<{ data: Product; success: boolean }>(
+      `/products/${id}`,
+      productData
+    );
     return response.data;
   }
 

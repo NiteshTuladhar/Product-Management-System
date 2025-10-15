@@ -7,14 +7,20 @@ import { TransformInterceptor } from './shared/interceptors/renderer.interceptor
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    transform: true,
-    forbidNonWhitelisted: true,
-    transformOptions:{
-      enableImplicitConversion: true,
-    }
-  }))
+  app.enableCors({
+    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  });
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
   app.useGlobalFilters(new AllExceptionsFilter());
 
   app.useGlobalInterceptors(new TransformInterceptor());
