@@ -9,7 +9,7 @@ import {
   Post,
   Query
 } from '@nestjs/common';
-import { QueryOptionsDto } from 'src/common/dto/query-options.dto';
+import { QueryOptionsDto } from 'src/shared/dto/query-options.dto';
 import { ProductCreateInput } from './dto/product-create.dto';
 import { ProductUpdateInput } from './dto/product-update.dto';
 import { Product } from './entities/product.entity';

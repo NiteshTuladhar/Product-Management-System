@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryOptions } from 'src/common/interface/query-options.interface';
+import { QueryOptions } from 'src/shared/interface/query-options.interface';
 import { FindManyOptions, ILike, Repository } from 'typeorm';
 import { ProductCreateInput } from '../dto/product-create.dto';
 import { ProductUpdateInput } from '../dto/product-update.dto';
