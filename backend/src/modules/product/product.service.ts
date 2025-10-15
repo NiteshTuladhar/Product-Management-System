@@ -112,7 +112,7 @@ export class ProductService {
       return this.productRepository.update(productId, updateProductDto);
     }catch(error){
       if (!(error instanceof ProductAlreadyExistsException)) {
-        this.logger.error(`Failed to create product: ${error.message}`, error.stack, {
+        this.logger.error(`Failed to update product: ${error.message}`, error.stack, {
           productName: updateProductDto.name,
           dto: updateProductDto
         });
