@@ -1,16 +1,12 @@
+import { Type } from 'class-transformer';
 import {
-  ArrayUnique,
-  IsArray,
-  Max,
-  Min,
-  MaxDate,
-  IsNotEmpty,
-  IsString,
-  Length,
   IsNumber,
   IsOptional,
+  IsPositive,
+  IsString,
+  Length,
+  Min
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class ProductUpdateInput {
   @IsOptional()
@@ -23,6 +19,7 @@ export class ProductUpdateInput {
   description?: string;
 
   @IsNumber({ maxDecimalPlaces: 2 })
+  @IsPositive({message: 'Price must be positive'})
   @Min(0, { message: 'Price must be non-negative' })
   @Type(() => Number)
   price?: number;

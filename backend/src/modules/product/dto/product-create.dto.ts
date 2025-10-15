@@ -1,29 +1,28 @@
+import { Type } from 'class-transformer';
 import {
-  ArrayUnique,
-  IsArray,
-  Max,
-  Min,
-  MaxDate,
   IsNotEmpty,
-  IsString,
-  Length,
   IsNumber,
   IsOptional,
+  IsPositive,
+  IsString,
+  Length,
+  Min
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class ProductCreateInput {
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Product name is required'})
   @IsString()
   @Length(1, 255, { message: 'Name must be between 1 and 255 characters' })
   name: string;
 
   @IsOptional()
   @IsString()
+  @Length(0,1000, {message: 'Description cannot exceed 1000 characters'})
   description?: string;
 
   @IsNotEmpty()
   @IsNumber({ maxDecimalPlaces: 2 })
+  @IsPositive({message: 'Price must be positive'})
   @Min(0, { message: 'Price must be non-negative' })
   @Type(() => Number)
   price: number;
@@ -38,4 +37,5 @@ export class ProductCreateInput {
   @Min(0, { message: 'Stock must be non-negative' })
   @Type(() => Number)
   stock?: number;
+
 }

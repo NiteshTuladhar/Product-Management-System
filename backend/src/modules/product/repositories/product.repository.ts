@@ -33,10 +33,11 @@ export class ProductRepository {
     };
 
     if (search) {
+      const sanitizedSearch = search.trim().replace(/[%_]/g, '\\$&');
       findOptions.where = [
-        { name: ILike(`%${search}%`) },
-        { description: ILike(`%${search}%`) },
-        { category: ILike(`%${search}%`) },
+        { name: ILike(`%${sanitizedSearch}%`) },
+        { description: ILike(`%${sanitizedSearch}%`) },
+        { category: ILike(`%${sanitizedSearch}%`) },
       ];
     }
 

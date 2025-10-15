@@ -1,9 +1,10 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { QueryOptions } from 'src/common/interface/query-options.interface';
+import { QueryOptionsDto } from 'src/common/dto/query-options.dto';
 import { ProductCreateInput } from './dto/product-create.dto';
 import { ProductUpdateInput } from './dto/product-update.dto';
 import { Product } from './entities/product.entity';
@@ -13,21 +14,40 @@ import { ProductRepository } from './repositories/product.repository';
 export class ProductService {
   constructor(private readonly productRepository: ProductRepository) {}
 
-  async getAllProducts(options?: QueryOptions): Promise<{
+  async getAllProducts(options: QueryOptionsDto): Promise<{
     products: Product[];
     total: number;
     page: number;
     limit: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
   }> {
+
+    const validSortFields = [
+      'id', 'name','price','category','stock', 'createdAt', 'updatedAt'
+    ];
+
+    if (options?.sortBy && !validSortFields.includes(options.sortBy)){
+      throw new BadRequestException(`Invalid sort field: ${options.sortBy}, valid fields are : ${validSortFields}`)
+    }
+
+
     const { products, total } = await this.productRepository.findAll(options);
 
-    const { page = 1, limit = 10 } = options || {};
+    const totalPages = Math.ceil(total/options?.limit);
+    const hasNext = options.page < totalPages;
+    const hasPrev = options.page > 1;
+
 
     return {
       products,
       total,
-      page,
-      limit,
+      page: options?.page,
+      limit: options?.limit,
+      totalPages,
+      hasNext,
+      hasPrev
     };
   }
 
@@ -82,4 +102,6 @@ export class ProductService {
     const deleted = await this.productRepository.delete(id);
     return { message: 'Product deleted successfully' };
   }
+
+
 }

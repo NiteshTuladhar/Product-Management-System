@@ -1,16 +1,15 @@
 import {
   Body,
   Controller,
-  DefaultValuePipe,
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   ParseUUIDPipe,
   Patch,
   Post,
   Query
 } from '@nestjs/common';
+import { QueryOptionsDto } from 'src/common/dto/query-options.dto';
 import { ProductCreateInput } from './dto/product-create.dto';
 import { ProductUpdateInput } from './dto/product-update.dto';
 import { Product } from './entities/product.entity';
@@ -22,19 +21,11 @@ export class ProductController {
 
   @Get()
   async getAllProducts(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 10,
-    @Query('sortBy') sortBy: string,
-    @Query('sortOrder') sortOrder: 'ASC' | 'DESC',
-    @Query('search') search: string,
+    @Query() queryOptions: QueryOptionsDto
   ) {
-    return this.productService.getAllProducts({
-      page,
-      limit,
-      sortBy,
-      sortOrder,
-      search,
-    });
+    return this.productService.getAllProducts(
+      queryOptions
+    );
   }
 
   @Get(':id')

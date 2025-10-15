@@ -1,10 +1,7 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
+  Entity
 } from 'typeorm';
 
 @Entity('products')
