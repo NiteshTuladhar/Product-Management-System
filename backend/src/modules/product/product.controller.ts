@@ -25,8 +25,8 @@ export class ProductController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 10,
     @Query('sortBy') sortBy: string,
-    @Query('sortBy') sortOrder: 'ASC' | 'DESC',
-    @Query('sortBy') search: string,
+    @Query('sortOrder') sortOrder: 'ASC' | 'DESC',
+    @Query('search') search: string,
   ) {
     return this.productService.getAllProducts({
       page,

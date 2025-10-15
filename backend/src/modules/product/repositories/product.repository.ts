@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryOptions } from 'src/common/interface/query-options.interface';
-import { FindManyOptions, Like, Repository } from 'typeorm';
+import { FindManyOptions, ILike, Repository } from 'typeorm';
 import { ProductCreateInput } from '../dto/product-create.dto';
 import { ProductUpdateInput } from '../dto/product-update.dto';
 import { Product } from '../entities/product.entity';
@@ -34,9 +34,9 @@ export class ProductRepository {
 
     if (search) {
       findOptions.where = [
-        { name: Like(`%${search}%`) },
-        { description: Like(`%${search}%`) },
-        { category: Like(`%${search}%`) },
+        { name: ILike(`%${search}%`) },
+        { description: ILike(`%${search}%`) },
+        { category: ILike(`%${search}%`) },
       ];
     }
 
@@ -72,4 +72,3 @@ export class ProductRepository {
   }
 }
 
-//* Need to do error handling , not found

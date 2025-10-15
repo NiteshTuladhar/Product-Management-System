@@ -2,6 +2,6 @@ export interface QueryOptions {
   page?: number;
   limit?: number;
   sortBy?: string;
-  sortOrder?: string;
+  sortOrder?: 'ASC' | 'DESC';
   search?: string;
 }
