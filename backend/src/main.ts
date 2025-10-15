@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { AllExceptionsFilter } from './shared/filters/all-exceptions.filter';
 import { TransformInterceptor } from './shared/interceptors/renderer.interceptors';
 
 async function bootstrap() {
@@ -14,6 +15,7 @@ async function bootstrap() {
       enableImplicitConversion: true,
     }
   }))
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   app.useGlobalInterceptors(new TransformInterceptor());
   await app.listen(process.env.PORT ?? 3000);

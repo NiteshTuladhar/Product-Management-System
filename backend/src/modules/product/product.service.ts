@@ -1,17 +1,19 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
-  NotFoundException,
+  Logger
 } from '@nestjs/common';
 import { QueryOptionsDto } from 'src/shared/dto/query-options.dto';
 import { ProductCreateInput } from './dto/product-create.dto';
 import { ProductUpdateInput } from './dto/product-update.dto';
 import { Product } from './entities/product.entity';
+import { ProductAlreadyExistsException, ProductNotFoundException } from './exceptions/product.exception';
 import { ProductRepository } from './repositories/product.repository';
 
 @Injectable()
 export class ProductService {
+  private readonly logger = new Logger(ProductService.name);
+
   constructor(private readonly productRepository: ProductRepository) {}
 
   async getAllProducts(options: QueryOptionsDto): Promise<{
@@ -24,7 +26,8 @@ export class ProductService {
     hasPrev: boolean;
   }> {
 
-    const validSortFields = [
+    try {
+      const validSortFields = [
       'id', 'name','price','category','stock', 'createdAt', 'updatedAt'
     ];
 
@@ -49,52 +52,73 @@ export class ProductService {
       hasNext,
       hasPrev
     };
+    }catch(error){
+      if (!(error instanceof BadRequestException)) {
+        this.logger.error(`Failed to get products: ${error.message}`, error.stack);
+      }
+      throw error;
+    }
   }
 
   async getProductById(id: string): Promise<Product> {
     const product = await this.productRepository.findById(id);
     if (!product) {
-      throw new NotFoundException(`Product with id ${id} not found.`);
+      throw new ProductNotFoundException(id);
     }
     return product;
   }
 
   async createProduct(createProductDto: ProductCreateInput): Promise<Product> {
-    const existingProduct = await this.productRepository.findAll({
-      search: createProductDto.name,
-      limit: 1,
-    });
+    try{
+      const existingProduct = await this.productRepository.findAll({
+        search: createProductDto.name,
+        limit: 1,
+      });
 
-    if (existingProduct.products.length > 0) {
-      throw new ConflictException(
-        `Product with the name ${name} already exists`,
-      );
+      if (existingProduct.products.length > 0) {
+        throw new ProductAlreadyExistsException(createProductDto.name);
+      }
+      return this.productRepository.create(createProductDto);
+    }catch (error){
+      if (!(error instanceof ProductAlreadyExistsException)) {
+        this.logger.error(`Failed to create product: ${error.message}`, error.stack, {
+          productName: createProductDto.name,
+          dto: createProductDto
+        });
+      }
+      throw error;
     }
-    return this.productRepository.create(createProductDto);
   }
 
   async updateProduct(
     productId: string,
     updateProductDto: ProductUpdateInput,
   ): Promise<Product | null> {
-    const existingProduct = await this.getProductById(productId);
+    try{
+      const existingProduct = await this.getProductById(productId);
 
-    if (
-      updateProductDto.name &&
-      updateProductDto.name !== existingProduct.name
-    ) {
-      const checkDuplicate = await this.productRepository.findAll({
-        search: updateProductDto.name,
-        limit: 1,
-      });
-      if (checkDuplicate.products.length > 0) {
-        throw new ConflictException(
-          `Product with the name ${name} aready exists`,
-        );
+      if (
+        updateProductDto.name &&
+        updateProductDto.name !== existingProduct.name
+      ) {
+        const checkDuplicate = await this.productRepository.findAll({
+          search: updateProductDto.name,
+          limit: 1,
+        });
+        if (checkDuplicate.products.length > 0) {
+          throw new ProductAlreadyExistsException(updateProductDto.name);
+        }
       }
+      return this.productRepository.update(productId, updateProductDto);
+    }catch(error){
+      if (!(error instanceof ProductAlreadyExistsException)) {
+        this.logger.error(`Failed to create product: ${error.message}`, error.stack, {
+          productName: updateProductDto.name,
+          dto: updateProductDto
+        });
+      }
+      throw error;
     }
-
-    return this.productRepository.update(productId, updateProductDto);
   }
 
   async deleteProduct(id: string): Promise<{ message: string }> {
