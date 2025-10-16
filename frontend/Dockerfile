@@ -1,44 +1,45 @@
-# Development Stage
-FROM node:22-alpine AS development
 
-WORKDIR /app
+FROM node:22
 
+ENV PORT 3000
+
+# Create app directory
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+# Install basic tools and update certificates
+RUN apt-get update && \
+    apt-get install -y ca-certificates curl dnsutils && \
+    update-ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# Network diagnostics (can remove after debugging)
+RUN nslookup registry.npmjs.com
+RUN curl -v https://registry.npmjs.com/
+
+# Configure npm
+RUN npm config rm proxy
+RUN npm config rm https-proxy
+RUN npm config set strict-ssl false
+RUN npm config set registry https://registry.npmmirror.com/
+RUN npm config set fetch-retry-mintimeout 30000
+RUN npm config set fetch-retry-maxtimeout 300000
+RUN npm install -g npm@latest
+RUN npm cache clean --force
+
+# Copy package files
 COPY package*.json ./
+COPY .npmrc ./
 
-RUN npm install --legacy-peer-deps
+# Install dependencies
+RUN npm install --legacy-peer-deps \
+    --fetch-retries=10 \
+    --fetch-retry-factor=12 \
+    --network-timeout=600000
 
+# Copy app and build
 COPY . .
-
-EXPOSE 3000
-
-
-CMD ["npm", "run", "dev"]
-
-# Builder Stage
-FROM node:22-alpine AS builder
-
-WORKDIR /app
-
-COPY package*.json ./
-
-RUN npm install --legacy-peer-deps
-
-COPY . .
-
 RUN npm run build
 
-# Production Stage 
-FROM node:22-alpine AS production
-
-WORKDIR /app
-
-COPY --from=builder --chown=node:node /app/package.json ./
-COPY --from=builder --chown=node:node /app/.next ./.next
-COPY --from=builder --chown=node:node /app/public ./public
-COPY --from=builder --chown=node:node /app/node_modules ./node_modules
-
-ENV NODE_ENV=production
-
 EXPOSE 3000
-
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]

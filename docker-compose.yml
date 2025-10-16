@@ -1,0 +1,70 @@
+services:
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: pms-client
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env.frontend
+    networks:
+      - pms-network
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pms-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env.backend
+    environment:
+      - NODE_ENV=development
+    networks:
+      - pms-network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    networks:
+      - pms-network
+
+  db:
+    image: postgres
+    container_name: pmsdb
+    env_file:
+      - .env.db
+    volumes:
+      - pms-db:/var/lib/postgresql/data
+    networks:
+      - pms-network
+
+  nginx:
+    image: nginx:1.15-alpine
+    container_name: pms_nginx
+    ports:
+      - 88:80
+    depends_on:
+      - api
+      # - web
+    volumes:
+      - ./nginx-local:/etc/nginx/conf.d
+    networks:
+      - pms-network
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+
+networks:
+  pms-network:
+    driver: bridge
+
+volumes:
+  pms-db:
