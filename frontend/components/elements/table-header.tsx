@@ -1,9 +1,9 @@
 "use client";
 
-import { TableHead } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { TableHead } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 
 interface TableHeaderProps {
   column: string;

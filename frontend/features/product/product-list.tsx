@@ -3,12 +3,11 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableFooter,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "@/components/ui/table";
 import { ProductListResponse } from "@/types/products";
 
@@ -84,8 +83,10 @@ function ProductTable({
   const pageNumbers = getPageNumbers();
 
   return (
-    <div className="flex flex-col gap-12">
-      <div className="flex gap-3 ">
+    <div className="flex flex-col space-y-8 gap-8">
+      {/* Search and Filter Section - Right aligned */}
+      <div className="flex justify-end">
+        <div className="flex gap-3">
           <SearchInput
             value={filters.search}
             onChange={setSearch}
@@ -93,21 +94,112 @@ function ProductTable({
             placeholder="Search by name, category..."
           />
 
-            <Button
-              variant="outline"
-              onClick={resetFilters}
-              className="whitespace-nowrap"
-            >
-              Clear Filters
-            </Button>
+          <Button
+            variant="outline"
+            onClick={resetFilters}
+            className="whitespace-nowrap"
+          >
+            Clear Filters
+          </Button>
         </div>
-        <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+      </div>
 
-          <Table>
-            <TableCaption>
-              <p>
-                Showing {products.length} of {total} products
-              </p>
+      {/* Table Section */}
+      <div className="flex flex-col gap-6">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">ID</TableHead>
+
+              {/* Sortable Headers */}
+              <CustomTableHeader
+                column="name"
+                currentSortBy={sorting.sortBy}
+                currentSortOrder={sorting.sortOrder}
+                onSort={setSort}
+              >
+                Product Name
+              </CustomTableHeader>
+
+              <CustomTableHeader
+                column="price"
+                currentSortBy={sorting.sortBy}
+                currentSortOrder={sorting.sortOrder}
+                onSort={setSort}
+              >
+                Price
+              </CustomTableHeader>
+
+              <CustomTableHeader
+                column="stock"
+                currentSortBy={sorting.sortBy}
+                currentSortOrder={sorting.sortOrder}
+                onSort={setSort}
+                className="text-right"
+              >
+                Stock
+              </CustomTableHeader>
+
+              <CustomTableHeader
+                column="category"
+                currentSortBy={sorting.sortBy}
+                currentSortOrder={sorting.sortOrder}
+                onSort={setSort}
+                className="text-right"
+              >
+                Category
+              </CustomTableHeader>
+
+              <CustomTableHeader
+                column="createdAt"
+                currentSortBy={sorting.sortBy}
+                currentSortOrder={sorting.sortOrder}
+                onSort={setSort}
+                className="text-right"
+              >
+                Created At
+              </CustomTableHeader>
+
+              <CustomTableHeader
+                column="updatedAt"
+                currentSortBy={sorting.sortBy}
+                currentSortOrder={sorting.sortOrder}
+                onSort={setSort}
+                className="text-right"
+              >
+                Updated At
+              </CustomTableHeader>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {products?.map((product) => (
+              <TableRow key={product.id}>
+                <TableCell className="font-medium">{product.id}</TableCell>
+                <TableCell>{product.name}</TableCell>
+                <TableCell>{product.price}</TableCell>
+                <TableCell>{product.stock}</TableCell>
+                <TableCell>{product.category}</TableCell>
+                <TableCell>{product.createdAt}</TableCell>
+                <TableCell>{product.updatedAt}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow></TableRow>
+          </TableFooter>
+        </Table>
+
+        {/* Pagination Section - Spaced from table */}
+        <div className="flex flex-col gap-4 mt-6">
+          {/* Results info and pagination controls */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            {/* Showing X of Y products - Left aligned */}
+            <div className="text-sm text-muted-foreground">
+              Showing {products.length} of {total} products
+            </div>
+
+            {/* Pagination UI - Right aligned */}
+            <div className="flex flex-col items-end gap-2">
               {pagination.totalPages > 1 && (
                 <Pagination>
                   <PaginationContent>
@@ -169,94 +261,16 @@ function ProductTable({
                 </Pagination>
               )}
 
-              {/* Page Info */}
-              <div className="text-sm text-muted-foreground text-center">
-                Page {pagination.page} of {pagination.totalPages} • {total} total
-                products
-              </div>
-            </TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">ID</TableHead>
-
-                {/* Sortable Headers */}
-                <CustomTableHeader
-                  column="name"
-                  currentSortBy={sorting.sortBy}
-                  currentSortOrder={sorting.sortOrder}
-                  onSort={setSort}
-                >
-                  Product Name
-                </CustomTableHeader>
-
-                <CustomTableHeader
-                  column="price"
-                  currentSortBy={sorting.sortBy}
-                  currentSortOrder={sorting.sortOrder}
-                  onSort={setSort}
-                >
-                  Price
-                </CustomTableHeader>
-
-                <CustomTableHeader
-                  column="stock"
-                  currentSortBy={sorting.sortBy}
-                  currentSortOrder={sorting.sortOrder}
-                  onSort={setSort}
-                  className="text-right"
-                >
-                  Stock
-                </CustomTableHeader>
-
-                <CustomTableHeader
-                  column="category"
-                  currentSortBy={sorting.sortBy}
-                  currentSortOrder={sorting.sortOrder}
-                  onSort={setSort}
-                  className="text-right"
-                >
-                  Category
-                </CustomTableHeader>
-
-                <CustomTableHeader
-                  column="createdAt"
-                  currentSortBy={sorting.sortBy}
-                  currentSortOrder={sorting.sortOrder}
-                  onSort={setSort}
-                  className="text-right"
-                >
-                  Created At
-                </CustomTableHeader>
-
-                <CustomTableHeader
-                  column="updatedAt"
-                  currentSortBy={sorting.sortBy}
-                  currentSortOrder={sorting.sortOrder}
-                  onSort={setSort}
-                  className="text-right"
-                >
-                  Updated At
-                </CustomTableHeader>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products?.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell className="font-medium">{product.id}</TableCell>
-                  <TableCell>{product.name}</TableCell>
-                  <TableCell>{product.price}</TableCell>
-                  <TableCell>{product.stock}</TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell>{product.createdAt}</TableCell>
-                  <TableCell>{product.updatedAt}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-            <TableFooter>
-              <TableRow></TableRow>
-            </TableFooter>
-          </Table>
+              {/* Page info - Right aligned below pagination */}
+              {pagination.totalPages > 1 && (
+                <div className="text-sm text-muted-foreground">
+                  Page {pagination.page} of {pagination.totalPages}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
+      </div>
     </div>
   );
 }
