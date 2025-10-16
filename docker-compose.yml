@@ -51,7 +51,7 @@ services:
       - api
       - web
     volumes:
-      - ./nginx-local:/etc/nginx/conf.d
+      - ./nginx:/etc/nginx/conf.d
     networks:
       - pms-network
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
