@@ -37,7 +37,7 @@ class ProductService {
     productData: CreateProductFormData
   ): Promise<{ data: Product; success: boolean }> {
     const response = await api.post<{ data: Product; success: boolean }>(
-      "products/",
+      "/products",
       productData
     );
     return response.data;

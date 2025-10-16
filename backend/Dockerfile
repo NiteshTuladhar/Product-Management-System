@@ -13,7 +13,7 @@ RUN npm install
 COPY . .
 
 # Build the NestJS application
-RUN npm run build
+RUN npm run build && ls -la dist
 
 # Stage 2: Create the production image
 FROM node:20-alpine AS production
@@ -22,7 +22,7 @@ WORKDIR /app
 
 # Copy only necessary files from the builder stage
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/dist/ ./dist
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/.env* ./
 # Copy source files for typeorm migrations (if needed)
@@ -37,4 +37,4 @@ RUN chmod +x entrypoint.sh
 EXPOSE 3000
 
 # Command to start the application
-CMD ["./entrypoint.sh"]
+CMD ["sh", "-c", "./entrypoint.sh"]
