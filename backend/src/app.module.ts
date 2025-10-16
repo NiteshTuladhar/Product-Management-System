@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { LruCacheModule } from './modules/lru_cache/lru_cache.module';
 import { ProductModule } from './modules/product/product.module';
 
 @Module({
@@ -26,8 +27,9 @@ import { ProductModule } from './modules/product/product.module';
       inject: [ConfigService],
     }),
     ProductModule,
+    LruCacheModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService ],
 })
 export class AppModule {}
