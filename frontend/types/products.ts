@@ -12,13 +12,16 @@ export interface Product {
 }
 
 export interface ProductListResponse {
-  products: Product[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrev: boolean;
+  success: boolean;
+  data: {
+    products: Product[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
 }
 
 export interface QueryOptionsParams {
