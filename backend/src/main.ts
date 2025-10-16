@@ -9,17 +9,25 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
 
-  const allowedOrigins = (process.env.CORS_ORIGINS || '').split(',');
-  app.enableCors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error('Not allowed by CORS'));
-    },
-    credentials: true,
-  });
+  // const allowedOrigins = (process.env.CORS_ORIGINS || '').split(',');
+  // app.enableCors({
+  //   origin: (origin, callback) => {
+  //     // Allow requests with no origin (mobile apps, curl, etc.)
+  //     if (!origin) return callback(null, true);
+
+  //     console.log('Request from origin:', origin);
+
+  //     if (allowedOrigins.includes(origin)) {
+  //       return callback(null, true);
+  //     }
+
+  //     console.error('CORS blocked origin:', origin);
+  //     return callback(new Error('Not allowed by CORS'));
+  //   },
+  //   credentials: true,
+  //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  //   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  // });
 
   app.useGlobalPipes(
     new ValidationPipe({
