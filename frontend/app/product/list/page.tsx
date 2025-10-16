@@ -1,7 +1,6 @@
 import ProductTable from "@/features/product/product-list";
 import { productService } from "@/services/productApi";
 import { QueryOptionsParams } from "@/types/products";
-import React, { Suspense } from "react";
 
 interface ProductListPageProps {
   searchParams: QueryOptionsParams;

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { ProductListResponse } from "@/types/products";
 
+import { CustomTableHeader } from "@/components/elements/table-header";
 import {
   Pagination,
   PaginationContent,
@@ -28,22 +29,26 @@ interface ProductTableProps {
   initialPage: number;
   initialLimit: number;
   initialSearch?: string;
-  initialSortBy?: string;
-  initialSortOrder?: "ASC" | "DESC";
+  initialSortBy: string;
+  initialSortOrder: "ASC" | "DESC";
 }
 
 function ProductTable({
   initialData,
   initialPage,
   initialLimit,
+  initialSortBy,
+  initialSortOrder,
 }: ProductTableProps) {
   const {
     data: { products, total },
   } = initialData;
 
-  const { pagination, setPage } = useTable({
+  const { pagination, setPage, sorting, setSort } = useTable({
     initialPage,
     initialLimit,
+    initialSortBy,
+    initialSortOrder,
     total,
   });
 
@@ -71,9 +76,14 @@ function ProductTable({
 
     return pages;
   };
-
   const pageNumbers = getPageNumbers();
-
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
   return (
     <Table>
       <TableCaption>
@@ -150,12 +160,65 @@ function ProductTable({
       <TableHeader>
         <TableRow>
           <TableHead className="w-[100px]">ID</TableHead>
-          <TableHead>Product Name</TableHead>
-          <TableHead>Price</TableHead>
-          <TableHead className="text-right">Stock</TableHead>
-          <TableHead className="text-right">Category</TableHead>
-          <TableHead className="text-right">Created At</TableHead>
-          <TableHead className="text-right">Update At</TableHead>
+
+          {/* Sortable Headers */}
+          <CustomTableHeader
+            column="name"
+            currentSortBy={sorting.sortBy}
+            currentSortOrder={sorting.sortOrder}
+            onSort={setSort}
+          >
+            Product Name
+          </CustomTableHeader>
+
+          <CustomTableHeader
+            column="price"
+            currentSortBy={sorting.sortBy}
+            currentSortOrder={sorting.sortOrder}
+            onSort={setSort}
+          >
+            Price
+          </CustomTableHeader>
+
+          <CustomTableHeader
+            column="stock"
+            currentSortBy={sorting.sortBy}
+            currentSortOrder={sorting.sortOrder}
+            onSort={setSort}
+            className="text-right"
+          >
+            Stock
+          </CustomTableHeader>
+
+          <CustomTableHeader
+            column="category"
+            currentSortBy={sorting.sortBy}
+            currentSortOrder={sorting.sortOrder}
+            onSort={setSort}
+            className="text-right"
+          >
+            Category
+          </CustomTableHeader>
+
+          <CustomTableHeader
+            column="createdAt"
+            currentSortBy={sorting.sortBy}
+            currentSortOrder={sorting.sortOrder}
+            onSort={setSort}
+            className="text-right"
+          >
+            Created At
+          </CustomTableHeader>
+
+          <CustomTableHeader
+            column="updatedAt"
+            currentSortBy={sorting.sortBy}
+            currentSortOrder={sorting.sortOrder}
+            onSort={setSort}
+            className="text-right"
+          >
+            Updated At
+          </CustomTableHeader>
         </TableRow>
       </TableHeader>
       <TableBody>

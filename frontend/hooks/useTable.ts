@@ -6,6 +6,8 @@ import { useCallback } from "react";
 interface UseTableProps {
   initialPage: number;
   initialLimit: number;
+  initialSortBy: string;
+  initialSortOrder: "ASC" | "DESC";
   total: number;
 }
 
@@ -20,16 +22,24 @@ interface UseTableReturn {
   };
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
+  sorting: {
+    sortBy: string;
+    sortOrder: "ASC" | "DESC";
+  };
+  setSort: (sortBy: string, sortOrder?: "ASC" | "DESC") => void;
 }
 
 export function useTable({
   initialPage,
   initialLimit,
+  initialSortBy = "createdAt",
+  initialSortOrder = "DESC",
   total,
 }: UseTableProps): UseTableReturn {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  //* For pagination
   const totalPages = Math.ceil(total / initialLimit);
   const hasNext = initialPage < totalPages;
   const hasPrev = initialPage > 1;
@@ -65,6 +75,26 @@ export function useTable({
     },
     [updateQueryParams]
   );
+  //* End of pagination
+
+  //* Sorting *//
+  const setSort = useCallback(
+    (newSortBy: string, newSortOrder?: "ASC" | "DESC") => {
+      const finalSortOrder =
+        newSortOrder ||
+        (newSortBy === initialSortBy && initialSortOrder === "ASC"
+          ? "DESC"
+          : "ASC");
+
+      updateQueryParams({
+        sortBy: newSortBy,
+        sortOrder: finalSortOrder,
+        page: "1",
+      });
+    },
+    [updateQueryParams, initialSortBy, initialSortOrder]
+  );
+  //*
 
   return {
     pagination: {
@@ -75,7 +105,12 @@ export function useTable({
       hasNext,
       hasPrev,
     },
+    sorting: {
+      sortBy: initialSortBy,
+      sortOrder: initialSortOrder,
+    },
     setPage,
     setLimit,
+    setSort,
   };
 }
