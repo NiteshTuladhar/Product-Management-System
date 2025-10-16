@@ -1,27 +1,28 @@
-Product Management System
+## Product Management System
 
 A full-stack application built with NestJS (backend) and Next.js 14 (frontend), containerized with Docker.
 
 Tech Stack
-Backend
+
+### Backend
 
 NestJS - Progressive Node.js framework
 TypeScript - Type-safe JavaScript
 PostgreSQL - Relational database
 
-Frontend
+### Frontend
 
 Next.js 14 - React framework with App Router
 TypeScript - Type-safe JavaScript
 Tailwind CSS - Utility-first CSS framework
 
-DevOps
+## DevOps
 
 Docker - Containerization
 Docker Compose - Multi-container orchestration
 Nginx - Reverse proxy and load balancing
 
-Prerequisites
+### Prerequisites
 Before you begin, ensure you have installed:
 
 Node.js (v20 or higher)
@@ -29,7 +30,7 @@ Docker (v24 or higher)
 Docker Compose (v2 or higher)
 Git
 
-Getting Started
+### Gett$ing Started
 git@github.com:NiteshTuladhar/Product-Management-System.git
 1. Clone the Repository
 bashgit clone [](https://github.com/NiteshTuladhar/Product-Management-System.git)
