@@ -45,7 +45,7 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=your_secure_password
 POSTGRES_DB=myapp
 
-# Application URLs
+### Application URLs
 NEXT_PUBLIC_API_URL=http://localhost:5000
 
 3. Running with Docker (Recommended)
@@ -54,61 +54,61 @@ Start all services
 bash# Build and start all containers
 docker-compose up -d
 
-# View logs
+### View logs
 docker-compose logs -f
 
-# View specific service logs
+### View specific service logs
 docker-compose logs -f backend
 docker-compose logs -f frontend
 Stop all services
 bashdocker-compose down
 
-# Stop and remove volumes (⚠️ This will delete all data)
+### Stop and remove volumes (⚠️ This will delete all data)
 docker-compose down -v
 4. Running Locally (Without Docker)
 Backend Setup
 bashcd backend
 
-# Install dependencies
+### Install dependencies
 npm install
 
-# Run database migrations (if applicable)
+### Run database migrations (if applicable)
 npm run migration:run
 
-# Start development server
+### Start development server
 npm run start:dev
 The backend will be available at http://localhost:5000
 Frontend Setup
 bashcd frontend
 
-# Install dependencies
+### Install dependencies
 npm install
 
-# Start development server
+### Start development server
 npm run dev
 The frontend will be available at http://localhost:3001
 
-# Build without cache
+### Build without cache
 docker-compose build --no-cache
 
-# Start services
+### Start services
 docker-compose up
 
-# Start in detached mode
+### Start in detached mode
 docker-compose up -d
 
-# Stop services
+### Stop services
 docker-compose down
 
-# View logs
+### View logs
 docker-compose logs -f [service_name]
 
-# Execute commands in running container
+### Execute commands in running container
 docker-compose exec backend npm run migration:run
 docker-compose exec frontend npm run build
 
-# Restart a specific service
+### Restart a specific service
 docker-compose restart backend
 
-# Remove all containers, networks, and volumes
+### Remove all containers, networks, and volumes
 docker-compose down -v
