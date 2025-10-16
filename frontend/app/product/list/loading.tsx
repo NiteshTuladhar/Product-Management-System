@@ -1,4 +1,4 @@
-import { CustomLoader } from "@/components/ui/tabel-skeleton";
+import { CustomLoader } from "@/components/elements/custom-loader";
 
 export default function Loading() {
   return (

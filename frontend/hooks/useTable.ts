@@ -1,13 +1,15 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useDebounce } from "./useDebounce";
 
 interface UseTableProps {
   initialPage: number;
   initialLimit: number;
   initialSortBy: string;
   initialSortOrder: "ASC" | "DESC";
+  initialSearch: string;
   total: number;
 }
 
@@ -20,13 +22,19 @@ interface UseTableReturn {
     hasNext: boolean;
     hasPrev: boolean;
   };
-  setPage: (page: number) => void;
-  setLimit: (limit: number) => void;
+
   sorting: {
     sortBy: string;
     sortOrder: "ASC" | "DESC";
   };
+  filters: {
+    search: string
+  }
+  setPage: (page: number) => void;
+  setLimit: (limit: number) => void;
   setSort: (sortBy: string, sortOrder?: "ASC" | "DESC") => void;
+  setSearch: (search:string) => void;
+  resetFilters: () => void;
 }
 
 export function useTable({
@@ -34,10 +42,14 @@ export function useTable({
   initialLimit,
   initialSortBy = "createdAt",
   initialSortOrder = "DESC",
+  initialSearch = "",
   total,
 }: UseTableProps): UseTableReturn {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const [searchValue, setSearchValue]= useState(initialSearch);
+  const debouncedSearch = useDebounce(searchValue);
 
   //* For pagination
   const totalPages = Math.ceil(total / initialLimit);
@@ -96,6 +108,30 @@ export function useTable({
   );
   //*
 
+  //* Search
+  const setSearch = useCallback((newSearch:string)=>{
+    setSearchValue(newSearch)
+  },[])
+
+  useEffect(()=>{
+    updateQueryParams({
+      search: debouncedSearch,
+      page: "1"
+    })
+  },[debouncedSearch, initialSearch, updateQueryParams])
+
+  //* End of Search
+
+  const resetFilters = useCallback(()=>{
+    updateQueryParams({
+      page: "1",
+      search: "",
+      sortBy: "createdAt",
+      sortOrder: "DESC"
+    });
+    setSearchValue("");
+  },[updateQueryParams]);
+
   return {
     pagination: {
       page: initialPage,
@@ -109,8 +145,13 @@ export function useTable({
       sortBy: initialSortBy,
       sortOrder: initialSortOrder,
     },
+    filters:{
+      search: searchValue
+    },
     setPage,
     setLimit,
     setSort,
+    setSearch,
+    resetFilters,
   };
 }

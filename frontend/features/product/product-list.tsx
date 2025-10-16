@@ -12,7 +12,9 @@ import {
 } from "@/components/ui/table";
 import { ProductListResponse } from "@/types/products";
 
+import { SearchInput } from "@/components/elements/search-input";
 import { CustomTableHeader } from "@/components/elements/table-header";
+import { Button } from "@/components/ui/button";
 import {
   Pagination,
   PaginationContent,
@@ -28,7 +30,7 @@ interface ProductTableProps {
   initialData: ProductListResponse;
   initialPage: number;
   initialLimit: number;
-  initialSearch?: string;
+  initialSearch: string;
   initialSortBy: string;
   initialSortOrder: "ASC" | "DESC";
 }
@@ -39,16 +41,19 @@ function ProductTable({
   initialLimit,
   initialSortBy,
   initialSortOrder,
+  initialSearch
 }: ProductTableProps) {
   const {
     data: { products, total },
   } = initialData;
 
-  const { pagination, setPage, sorting, setSort } = useTable({
+  const { pagination, setPage, sorting, setSort,
+    filters, setSearch, resetFilters } = useTable({
     initialPage,
     initialLimit,
     initialSortBy,
     initialSortOrder,
+    initialSearch,
     total,
   });
 
@@ -77,167 +82,182 @@ function ProductTable({
     return pages;
   };
   const pageNumbers = getPageNumbers();
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
+
   return (
-    <Table>
-      <TableCaption>
-        <p>
-          Showing {products.length} of {total} products
-        </p>
-        {pagination.totalPages > 1 && (
-          <Pagination>
-            <PaginationContent>
-              {/* Previous Button */}
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (pagination.hasPrev) {
-                      setPage(pagination.page - 1);
-                    }
-                  }}
-                  className={
-                    !pagination.hasPrev ? "pointer-events-none opacity-50" : ""
-                  }
-                />
-              </PaginationItem>
+    <div className="flex flex-col gap-12">
+      <div className="flex gap-3 ">
+          <SearchInput
+            value={filters.search}
+            onChange={setSearch}
+            onClear={() => setSearch("")}
+            placeholder="Search by name, category..."
+          />
 
-              {/* Page Numbers */}
-              {pageNumbers.map((pageNum) => (
-                <PaginationItem key={pageNum}>
-                  <PaginationLink
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setPage(pageNum);
-                    }}
-                    isActive={pageNum === pagination.page}
-                  >
-                    {pageNum}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
+            <Button
+              variant="outline"
+              onClick={resetFilters}
+              className="whitespace-nowrap"
+            >
+              Clear Filters
+            </Button>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
 
-              {/* Ellipsis for many pages */}
-              {pagination.totalPages > pageNumbers[pageNumbers.length - 1] && (
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
+          <Table>
+            <TableCaption>
+              <p>
+                Showing {products.length} of {total} products
+              </p>
+              {pagination.totalPages > 1 && (
+                <Pagination>
+                  <PaginationContent>
+                    {/* Previous Button */}
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (pagination.hasPrev) {
+                            setPage(pagination.page - 1);
+                          }
+                        }}
+                        className={
+                          !pagination.hasPrev ? "pointer-events-none opacity-50" : ""
+                        }
+                      />
+                    </PaginationItem>
+
+                    {/* Page Numbers */}
+                    {pageNumbers.map((pageNum) => (
+                      <PaginationItem key={pageNum}>
+                        <PaginationLink
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setPage(pageNum);
+                          }}
+                          isActive={pageNum === pagination.page}
+                        >
+                          {pageNum}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+
+                    {/* Ellipsis for many pages */}
+                    {pagination.totalPages > pageNumbers[pageNumbers.length - 1] && (
+                      <PaginationItem>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    )}
+
+                    {/* Next Button */}
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (pagination.hasNext) {
+                            setPage(pagination.page + 1);
+                          }
+                        }}
+                        className={
+                          !pagination.hasNext ? "pointer-events-none opacity-50" : ""
+                        }
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               )}
 
-              {/* Next Button */}
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (pagination.hasNext) {
-                      setPage(pagination.page + 1);
-                    }
-                  }}
-                  className={
-                    !pagination.hasNext ? "pointer-events-none opacity-50" : ""
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
+              {/* Page Info */}
+              <div className="text-sm text-muted-foreground text-center">
+                Page {pagination.page} of {pagination.totalPages} • {total} total
+                products
+              </div>
+            </TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[100px]">ID</TableHead>
 
-        {/* Page Info */}
-        <div className="text-sm text-muted-foreground text-center">
-          Page {pagination.page} of {pagination.totalPages} • {total} total
-          products
+                {/* Sortable Headers */}
+                <CustomTableHeader
+                  column="name"
+                  currentSortBy={sorting.sortBy}
+                  currentSortOrder={sorting.sortOrder}
+                  onSort={setSort}
+                >
+                  Product Name
+                </CustomTableHeader>
+
+                <CustomTableHeader
+                  column="price"
+                  currentSortBy={sorting.sortBy}
+                  currentSortOrder={sorting.sortOrder}
+                  onSort={setSort}
+                >
+                  Price
+                </CustomTableHeader>
+
+                <CustomTableHeader
+                  column="stock"
+                  currentSortBy={sorting.sortBy}
+                  currentSortOrder={sorting.sortOrder}
+                  onSort={setSort}
+                  className="text-right"
+                >
+                  Stock
+                </CustomTableHeader>
+
+                <CustomTableHeader
+                  column="category"
+                  currentSortBy={sorting.sortBy}
+                  currentSortOrder={sorting.sortOrder}
+                  onSort={setSort}
+                  className="text-right"
+                >
+                  Category
+                </CustomTableHeader>
+
+                <CustomTableHeader
+                  column="createdAt"
+                  currentSortBy={sorting.sortBy}
+                  currentSortOrder={sorting.sortOrder}
+                  onSort={setSort}
+                  className="text-right"
+                >
+                  Created At
+                </CustomTableHeader>
+
+                <CustomTableHeader
+                  column="updatedAt"
+                  currentSortBy={sorting.sortBy}
+                  currentSortOrder={sorting.sortOrder}
+                  onSort={setSort}
+                  className="text-right"
+                >
+                  Updated At
+                </CustomTableHeader>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {products?.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell className="font-medium">{product.id}</TableCell>
+                  <TableCell>{product.name}</TableCell>
+                  <TableCell>{product.price}</TableCell>
+                  <TableCell>{product.stock}</TableCell>
+                  <TableCell>{product.category}</TableCell>
+                  <TableCell>{product.createdAt}</TableCell>
+                  <TableCell>{product.updatedAt}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+            <TableFooter>
+              <TableRow></TableRow>
+            </TableFooter>
+          </Table>
         </div>
-      </TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[100px]">ID</TableHead>
-
-          {/* Sortable Headers */}
-          <CustomTableHeader
-            column="name"
-            currentSortBy={sorting.sortBy}
-            currentSortOrder={sorting.sortOrder}
-            onSort={setSort}
-          >
-            Product Name
-          </CustomTableHeader>
-
-          <CustomTableHeader
-            column="price"
-            currentSortBy={sorting.sortBy}
-            currentSortOrder={sorting.sortOrder}
-            onSort={setSort}
-          >
-            Price
-          </CustomTableHeader>
-
-          <CustomTableHeader
-            column="stock"
-            currentSortBy={sorting.sortBy}
-            currentSortOrder={sorting.sortOrder}
-            onSort={setSort}
-            className="text-right"
-          >
-            Stock
-          </CustomTableHeader>
-
-          <CustomTableHeader
-            column="category"
-            currentSortBy={sorting.sortBy}
-            currentSortOrder={sorting.sortOrder}
-            onSort={setSort}
-            className="text-right"
-          >
-            Category
-          </CustomTableHeader>
-
-          <CustomTableHeader
-            column="createdAt"
-            currentSortBy={sorting.sortBy}
-            currentSortOrder={sorting.sortOrder}
-            onSort={setSort}
-            className="text-right"
-          >
-            Created At
-          </CustomTableHeader>
-
-          <CustomTableHeader
-            column="updatedAt"
-            currentSortBy={sorting.sortBy}
-            currentSortOrder={sorting.sortOrder}
-            onSort={setSort}
-            className="text-right"
-          >
-            Updated At
-          </CustomTableHeader>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {products?.map((product) => (
-          <TableRow key={product.id}>
-            <TableCell className="font-medium">{product.id}</TableCell>
-            <TableCell>{product.name}</TableCell>
-            <TableCell>{product.price}</TableCell>
-            <TableCell>{product.stock}</TableCell>
-            <TableCell>{product.category}</TableCell>
-            <TableCell>{product.createdAt}</TableCell>
-            <TableCell>{product.updatedAt}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-      <TableFooter>
-        <TableRow></TableRow>
-      </TableFooter>
-    </Table>
+    </div>
   );
 }
 
