@@ -1,7 +1,7 @@
 import ProductTable from "@/features/product/product-list";
 import { productService } from "@/services/productApi";
 import { QueryOptionsParams } from "@/types/products";
-import React from "react";
+import React, { Suspense } from "react";
 
 interface ProductListPageProps {
   searchParams: QueryOptionsParams;
@@ -23,16 +23,14 @@ const ProductListPage = async ({ searchParams }: ProductListPageProps) => {
   });
 
   return (
-    <div>
-      <ProductTable
-        initialData={data}
-        initialPage={page}
-        initialLimit={limit}
-        // initialSearch={search}
-        initialSortBy={sortBy}
-        initialSortOrder={sortOrder}
-      />
-    </div>
+    <ProductTable
+      initialData={data}
+      initialPage={page}
+      initialLimit={limit}
+      // initialSearch={search}
+      initialSortBy={sortBy}
+      initialSortOrder={sortOrder}
+    />
   );
 };
 
