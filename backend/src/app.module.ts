@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LruCacheModule } from './modules/lru_cache/lru_cache.module';
 import { ProductModule } from './modules/product/product.module';
+import { RequestLoggerMiddleware } from './shared/middleware/request-logger.middleware';
 
 @Module({
   imports: [
@@ -32,4 +33,8 @@ import { ProductModule } from './modules/product/product.module';
   controllers: [AppController],
   providers: [AppService ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer){
+    consumer.apply(RequestLoggerMiddleware).forRoutes('*')
+  }
+}
