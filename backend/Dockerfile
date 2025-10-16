@@ -1,42 +1,40 @@
-FROM node:16-alpine As development
+# Stage 1: Build the application
+FROM node:20-alpine AS builder
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY  package*.json ./
+# Copy package.json and package-lock.json first to leverage Docker cache
+COPY package*.json ./
 
-RUN npm ci --legacy-peer-deps
+# Install dependencies
+RUN npm install
 
-COPY  . .
+# Copy the rest of the application code
+COPY . .
 
-USER node
-
-FROM node:16-alpine As build
-
-WORKDIR /usr/src/app
-
-COPY  package*.json ./
-
-COPY  --from=development /usr/src/app/node_modules ./node_modules
-
-COPY  . .
-
+# Build the NestJS application
 RUN npm run build
 
-ENV NODE_ENV production
+# Stage 2: Create the production image
+FROM node:20-alpine AS production
 
-RUN npm ci --only=production --legacy-peer-deps && npm cache clean --force
+WORKDIR /app
 
-USER node
+# Copy only necessary files from the builder stage
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/.env* ./
+# Copy source files for typeorm migrations (if needed)
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
+COPY --from=builder /app/package.json ./package.json
 
+COPY entrypoint.sh ./
+RUN chmod +x entrypoint.sh
 
+# Expose the port your application listens on
+EXPOSE 3000
 
-
-FROM node:16-alpine As production
-
-
-COPY  --from=build /usr/src/app/node_modules ./node_modules
-COPY  --from=build /usr/src/app/dist ./dist
-COPY --from=build /usr/src/app/package.json ./package.json
-COPY --from=build /usr/src/app/package-lock.json ./package-lock.json
-
-CMD ["node", "dist/main.js"]
+# Command to start the application
+CMD ["./entrypoint.sh"]
