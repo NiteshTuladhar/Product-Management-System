@@ -1,9 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
 
 interface SearchInputProps {
   value: string;
@@ -16,7 +14,6 @@ interface SearchInputProps {
 export function SearchInput({
   value,
   onChange,
-  onClear,
   placeholder = "Search products...",
   className,
 }: SearchInputProps) {

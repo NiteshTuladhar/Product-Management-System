@@ -4,11 +4,8 @@ import { GoBackButton } from "@/components/elements/goback-button";
 import { Button } from "@/components/ui/button";
 import ProductForm from "@/features/product/product-form";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React from "react";
 
 const ProductCreatePage = () => {
-  const router = useRouter();
   return (
     <div className="flex flex-col items-center justify-center py-8">
       <div className="w-full max-w-2xl">
