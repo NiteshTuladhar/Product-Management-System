@@ -24,6 +24,8 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import Link from "next/link";
+import { useState } from "react";
+import Loading from "@/app/product/list/loading";
 
 const ProductForm = ({
   product,
@@ -33,6 +35,7 @@ const ProductForm = ({
   formType: "create" | "update";
 }) => {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const scheme =
     formType === "update" ? updateProductSchema : createProductSchema;
@@ -58,10 +61,10 @@ const ProductForm = ({
   const handleSubmit = async (
     data: CreateProductFormData | UpdateProductFormData
   ) => {
+    setIsLoading(true);
     try {
       if (formType === "update") {
         if (!product?.id) throw new Error("Product ID is not provided.");
-
         const updatedProduct = await productService.updateProduct(
           product?.id,
           data as UpdateProductFormData
@@ -94,18 +97,28 @@ const ProductForm = ({
           });
         }
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: `${error.response.data.message}`,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit)}
-        className="flex flex-col space-y-10 gap-16"
-      >
-        <div className="space-y-6 ">
+    <div className="relative">
+      {isLoading && (
+        <Loading
+          text={formType === "create" ? "Creating product" : "Updating product"}
+        />
+      )}
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(handleSubmit)}
+          className="flex flex-col gap-6"
+        >
           <FormField
             control={form.control}
             name="name"
@@ -198,18 +211,18 @@ const ProductForm = ({
               </FormItem>
             )}
           />
-        </div>
 
-        <div className="flex justify-end gap-4 ">
-          <Button type="button" variant="outline">
-            Cancel
-          </Button>
-          <Button type="submit">
-            {formType === "create" ? "Create Product" : "Update Product"}
-          </Button>
-        </div>
-      </form>
-    </Form>
+          <div className="flex justify-end gap-4 ">
+            <Button type="button" variant="outline" disabled={isLoading}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isLoading}>
+              {formType === "create" ? "Create Product" : "Update Product"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 };
 

@@ -10,7 +10,7 @@ export function CustomLoader({ text = "Loading...", className }: LoaderProps) {
   return (
     <div
       className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm",
+        "fixed inset-0 z-50 flex items-center justify-center bg-background/40 backdrop-blur-sm", // Changed from bg-background/80 to bg-background/40
         className
       )}
     >

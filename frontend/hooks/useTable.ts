@@ -28,12 +28,12 @@ interface UseTableReturn {
     sortOrder: "ASC" | "DESC";
   };
   filters: {
-    search: string
-  }
+    search: string;
+  };
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
   setSort: (sortBy: string, sortOrder?: "ASC" | "DESC") => void;
-  setSearch: (search:string) => void;
+  setSearch: (search: string) => void;
   resetFilters: () => void;
 }
 
@@ -48,7 +48,7 @@ export function useTable({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [searchValue, setSearchValue]= useState(initialSearch);
+  const [searchValue, setSearchValue] = useState(initialSearch);
   const debouncedSearch = useDebounce(searchValue);
 
   //* For pagination
@@ -109,28 +109,28 @@ export function useTable({
   //*
 
   //* Search
-  const setSearch = useCallback((newSearch:string)=>{
-    setSearchValue(newSearch)
-  },[])
+  const setSearch = useCallback((newSearch: string) => {
+    setSearchValue(newSearch);
+  }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     updateQueryParams({
       search: debouncedSearch,
-      page: "1"
-    })
-  },[debouncedSearch, initialSearch, updateQueryParams])
+      page: "1",
+    });
+  }, [debouncedSearch, initialSearch]);
 
   //* End of Search
 
-  const resetFilters = useCallback(()=>{
+  const resetFilters = useCallback(() => {
     updateQueryParams({
       page: "1",
       search: "",
       sortBy: "createdAt",
-      sortOrder: "DESC"
+      sortOrder: "DESC",
     });
     setSearchValue("");
-  },[updateQueryParams]);
+  }, [updateQueryParams]);
 
   return {
     pagination: {
@@ -145,8 +145,8 @@ export function useTable({
       sortBy: initialSortBy,
       sortOrder: initialSortOrder,
     },
-    filters:{
-      search: searchValue
+    filters: {
+      search: searchValue,
     },
     setPage,
     setLimit,

@@ -54,8 +54,11 @@ class ProductService {
     return response.data;
   }
 
-  async deleteProduct(id: string): Promise<void> {
-    await api.delete(`/products/${id}`);
+  async deleteProduct(
+    id: string
+  ): Promise<{ data: Product; success: boolean }> {
+    const reponse = await api.delete(`/products/${id}`);
+    return reponse.data;
   }
 }
 
